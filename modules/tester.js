@@ -85,7 +85,7 @@ var Tester = function Tester(casper, options) {
         passesTime: [],
         failuresTime: []
     };
-    
+
     // measuring test duration
     this.currentTestStartTime = null;
     this.lastAssertTime = 0;
@@ -105,12 +105,12 @@ var Tester = function Tester(casper, options) {
         var timeElapsed = new Date() - this.currentTestStartTime;
         this.testResults.failuresTime.push(timeElapsed - this.lastAssertTime);
         this.exporter.addFailure(
-                fs.absolute(failure.file),
-                failure.message  || failure.standard,
-                failure.standard || "test failed",
-                failure.type     || "unknown",
-                (timeElapsed - this.lastAssertTime)
-            );
+            fs.absolute(failure.file),
+            failure.message  || failure.standard,
+            failure.standard || "test failed",
+            failure.type     || "unknown",
+            (timeElapsed - this.lastAssertTime)
+        );
         this.lastAssertTime = timeElapsed;
         this.testResults.failures.push(failure);
 
@@ -707,17 +707,10 @@ Tester.prototype.bar = function bar(text, style) {
  * @return Number duration of all tests executed until now (in the current suite)
  */
 Tester.prototype.calculateSuiteDuration = function calculateSuiteDuration() {
-	var sum = 0,
-	    sumArray = function(array) {
-		for(var i = 0; i < array.length; i++) {
-			sum += array[i];
-		}
-	};
-	
-	sumArray(this.testResults.passesTime);
-	sumArray(this.testResults.failuresTime);
-	
-	return sum;
+    "use strict";
+    return this.testResults.passesTime.concat(this.testResults.failuresTime).reduce(function add(a, b) {
+        return a + b;
+    }, 0);
 };
 
 /**
@@ -899,7 +892,8 @@ Tester.prototype.getPasses = function getPasses() {
  * @return Array durations of failed tests
  */
 Tester.prototype.getFailuresTime = function getFailuresTime() {
-	return this.testResults.failuresTime;
+    "use strict";
+    return this.testResults.failuresTime;
 }
 
 /**
@@ -908,7 +902,8 @@ Tester.prototype.getFailuresTime = function getFailuresTime() {
  * @return Array durations of passed tests
  */
 Tester.prototype.getPassesTime = function getPassesTime() {
-	return this.testResults.passesTime;
+    "use strict";
+    return this.testResults.passesTime;
 }
 
 
@@ -1008,8 +1003,9 @@ Tester.prototype.renderResults = function renderResults(exit, status, save) {
             statusText = this.options.passText;
             style = 'GREEN_BAR';
         }
-        result = f('%s %s tests executed, %d passed, %d failed.',
-                   statusText, total, this.testResults.passed, this.testResults.failed);
+        result = f('%s %s tests executed in %ss, %d passed, %d failed.',
+                   statusText, total, utils.ms2seconds(this.calculateSuiteDuration()),
+                   this.testResults.passed, this.testResults.failed);
     }
     this.casper.echo(result, style, this.options.pad);
     if (this.testResults.failed > 0) {

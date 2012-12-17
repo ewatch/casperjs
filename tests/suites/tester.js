@@ -211,21 +211,14 @@ casper.then(function() {
 });
 
 casper.then(function() {
-	t.comment('Tester.calculateSuiteDuration()');
-	var passedTimes = t.getPassesTime(),
-		failedTimes = t.getFailuresTime(),
-		calculatedSum = t.calculateSuiteDuration(),
-		sum = 0;
-	
-		for(var i = 0; i < passedTimes.length; i++) {
-			sum += passedTimes[i];
-		}
-
-		for(var i = 0; i < failedTimes.length; i++) {
-			sum += failedTimes[i];
-		}
-		
-		t.assertEquals(calculatedSum, sum, "Tester.calculateSuiteDuration() works as expected")
+    t.comment('Tester.calculateSuiteDuration()');
+    function add(a, b) {
+        return a + b;
+    }
+    var passedTime = t.getPassesTime().reduce(add, 0),
+        failedTime = t.getFailuresTime().reduce(add, 0),
+        calculatedSum = t.calculateSuiteDuration();
+    t.assertEquals(calculatedSum, passedTime + failedTime, "Tester.calculateSuiteDuration() works as expected")
 });
 
 casper.run(function() {

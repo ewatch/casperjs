@@ -4,29 +4,38 @@ CasperJS Changelog
 XXXX-XX-XX, v1.0.0
 ------------------
 
+- merged PR [#319](https://github.com/n1k0/casperjs/pull/319), fixed [#209](https://github.com/n1k0/casperjs/issues/209) - test duration has been added to XUnit XML result file.
+
+2012-12-14, v1.0.0-RC6
+----------------------
+
+I'm still expecting a 1.0 stable for Christmas. Feedback: bring it on.
+
 ### Important Changes & Caveats
 
-#### Reverted to emulated mouse events
+#### Added experimental support for frames
 
-For some (weird) reason, emulated mouse events are actually more accurate than native ones.
-
-Weird, I said.
-
-#### Added support for frames
-
-Short excerpt of related tests:
+A minimal convenient API has been added to Casper in order to ease the switch of current page context:
 
 ```js
-casper.start('tests/site/frames.html');
-
-casper.waitForFrame('frame1', function() {
-    this.test.assertTitle('CasperJS test frames');
+casper.start('tests/site/frames.html', function() {
+    this.test.assertTitle('CasperJS frameset');
 });
 
 casper.withFrame('frame1', function() {
     this.test.assertTitle('CasperJS frame 1');
 });
+
+casper.then(function() {
+    this.test.assertTitle('CasperJS frameset');
+});
 ```
+
+#### Reverted to emulated mouse events
+
+Native mouse events didn't play well with (i)frames, because the computed element coordinates of the clicked element were erroneous.
+
+So programmatic mouse events are reintroduced back into this corrective RC until a better solution is found.
 
 ### Bugfixes & enhancements
 

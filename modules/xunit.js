@@ -92,22 +92,18 @@ exports.XUnitExporter = XUnitExporter;
  *
  * @param  String  classname
  * @param  String  name
- * @param  Number duration
+ * @param  Number  duration  Test duration in milliseconds
  */
 XUnitExporter.prototype.addSuccess = function addSuccess(classname, name, duration) {
     "use strict";
-    if(duration !== undefined) {
-        this._xml.appendChild(utils.node('testcase', {
-            classname: generateClassName(classname),
-            name: name,
-            time: duration
-        }));    	
-    } else { 
-        this._xml.appendChild(utils.node('testcase', {
-            classname: generateClassName(classname),
-            name:      name
-        }));
+    var snode = utils.node('testcase', {
+        classname: generateClassName(classname),
+        name: name
+    });
+    if (duration !== undefined) {
+        snode.setAttribute('time', utils.ms2seconds(duration));
     }
+    this._xml.appendChild(snode);
 };
 
 /**
@@ -117,22 +113,16 @@ XUnitExporter.prototype.addSuccess = function addSuccess(classname, name, durati
  * @param  String  name
  * @param  String  message
  * @param  String  type
- * @param  Number duration
+ * @param  Number  duration  Test duration in milliseconds
  */
 XUnitExporter.prototype.addFailure = function addFailure(classname, name, message, type, duration) {
     "use strict";
-    if(duration !== undefined) { 
-        var fnode = utils.node('testcase', {
-            classname: generateClassName(classname),
-            name:      name,
-            time: duration
-        });
-    } else {
-	    var fnode = utils.node('testcase', {
-	        classname: generateClassName(classname),
-	        name:      name
-	    });
-    	
+    var fnode = utils.node('testcase', {
+        classname: generateClassName(classname),
+        name:      name
+    });
+    if (duration !== undefined) {
+        fnode.setAttribute('time', utils.ms2seconds(duration));
     }
     var failure = utils.node('failure', {
         type: type || "unknown"
@@ -143,16 +133,14 @@ XUnitExporter.prototype.addFailure = function addFailure(classname, name, messag
 };
 
 /**
- * Adds a successful test result.
+ * Adds test suite duration
  *
- * @param  String  classname
- * @param  String  name
- * @param  Number duration
+ * @param  Number  duration  Test duration in milliseconds
  */
 XUnitExporter.prototype.setSuiteDuration = function setSuiteDuration(duration) {
     "use strict";
-    if(!isNaN(duration)) {
-    	this._xml.setAttribute("time", duration);
+    if (!isNaN(duration)) {
+        this._xml.setAttribute("time", utils.ms2seconds(duration));
     }
 };
 
